@@ -2,20 +2,32 @@
 
 # -*- coding: utf-8 -*-
 
-import time
-import datetime
-from influxdb import InfluxDBClient
+import os
 from sense_hat import SenseHat
+from influxdb import InfluxDBClient
+import datetime
+import time
 
-sense = SenseHat()
-client = InfluxDBClient("localhost", 8086, "root", "root", "logger_db")
+def get_cpu_temp():
+    res = os.popen("vcgencmd measure_temp").readline()
+    return float(res.replace("temp=","").replace("'C\n",""))
+
+def get_temperature(sense):
+    sense_temp = sense.get_temperature()
+    cpu_temp = get_cpu_temp()
+    return sense_temp - ((cpu_temp - sense_temp) / 1.5)
 
 try:
-     while True:
-        temperature = sense.get_temperature()
+    sense = SenseHat()
+    client = InfluxDBClient("localhost", 8086, "root", "root", "logger_db")
+
+    while True:
+        timestamp = datetime.datetime.utcnow().isoformat()
+
+        temperature = get_temperature(sense)
         pressure = sense.get_pressure()
         humidity = sense.get_humidity()
-        timestamp = datetime.datetime.utcnow().isoformat()
+        
         
         datapoints = [{
             "measurement": "test1",
