@@ -19,7 +19,7 @@ try:
     sense = SenseHat()
     sense.set_rotation(180)
 
-    client = InfluxDBClient("localhost", 8086, "root", "root", "logger_db")
+    client = InfluxDBClient("localhost", 8086, "root", "root", "weather_node")
 
     while True:
         timestamp = datetime.datetime.utcnow().isoformat()
@@ -29,7 +29,7 @@ try:
         pressure = sense.get_pressure()
 
         datapoints = [{
-            "measurement": "test1",
+            "measurement": "office",
             "tags": {},
             "time": timestamp,
             "fields": {
@@ -40,9 +40,6 @@ try:
         }]
 
         client.write_points(datapoints)
-
-        sense.show_message(str(round(temperature)) + "c " + str(round(humidity)) + "%RH " + str(round(pressure)) + "mBar", text_colour=[100, 100, 100])
-
-        time.sleep(5)
+	sense.show_message(str(round(temperature)) + "c " + str(round(humidity)) + "%RH " + str(round(pressure)) + "mBar", text_colour=[100, 100, 100])
 except KeyboardInterrupt:
 	print("Exit")
