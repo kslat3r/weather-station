@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import os
-from sense_hat import SenseHat
+import bme680
 from influxdb import InfluxDBClient
 import datetime
 import time
@@ -16,30 +16,37 @@ def get_temperature(sense):
     return sense_temp - ((cpu_temp - sense_temp) / 1.5)
 
 try:
-    sense = SenseHat()
-    sense.set_rotation(180)
+    try:
+        sense = bme680.BME680(bme680.I2C_ADDR_PRIMARY)
+    except IOError:
+	sense = bme680.BME680(bme680.I2C_ADDR_SECONDARY)
+
+    sense.set_humidity_oversample(bme680.OS_2X)
+    sense.set_pressure_oversample(bme680.OS_4X)
+    sense.set_temperature_oversample(bme680.OS_8X)
+    sense.set_filter(bme680.FILTER_SIZE_3)
 
     client = InfluxDBClient("localhost", 8086, "root", "root", "weather_node")
 
     while True:
         timestamp = datetime.datetime.utcnow().isoformat()
 
-        temperature = get_temperature(sense)
-        humidity = sense.get_humidity()
-        pressure = sense.get_pressure()
+	if sense.get_sensor_data():
+            temperature = sense.data.temperature
+            humidity = sense.data.humidity
+            pressure = sense.data.pressure
 
-        datapoints = [{
-            "measurement": "office",
-            "tags": {},
-            "time": timestamp,
-            "fields": {
-                "temperaturevalue": temperature,
-                "humidityvalue": humidity,
-                "pressurevalue": pressure
-            }
-        }]
+            datapoints = [{
+                "measurement": "office",
+                "tags": {},
+                "time": timestamp,
+                "fields": {
+                    "temperaturevalue": temperature,
+                    "humidityvalue": humidity,
+                    "pressurevalue": pressure
+                }
+            }]
 
         client.write_points(datapoints)
-	sense.show_message(str(round(temperature)) + "c " + str(round(humidity)) + "%RH " + str(round(pressure)) + "mBar", text_colour=[100, 100, 100])
 except KeyboardInterrupt:
 	print("Exit")
