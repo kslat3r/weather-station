@@ -19,7 +19,7 @@ try:
     try:
         sense = bme680.BME680(bme680.I2C_ADDR_PRIMARY)
     except IOError:
-	sense = bme680.BME680(bme680.I2C_ADDR_SECONDARY)
+	    sense = bme680.BME680(bme680.I2C_ADDR_SECONDARY)
 
     sense.set_humidity_oversample(bme680.OS_2X)
     sense.set_pressure_oversample(bme680.OS_4X)
@@ -43,7 +43,7 @@ try:
         if sense.get_sensor_data() and sense.data.heat_stable:
             gas = sense.data.gas_resistance
 
-	    burn_in_data.append(gas)
+            burn_in_data.append(gas)
             time.sleep(1)
 
     gas_baseline = sum(burn_in_data[-50:]) / 50.0
@@ -67,7 +67,7 @@ try:
                 gas = 100 - (humidity_weighting * 100)
 
             humidity = sense.data.humidity
-	    aq_humidity = sense.data.humidity
+	        aq_humidity = sense.data.humidity
             humidity_offset = aq_humidity - humidity_baseline
 
             if humidity_offset > 0:
@@ -88,7 +88,7 @@ try:
                 "fields": {
                     "temperaturevalue": temperature,
                     "pressurevalue": pressure,
-		    "gasvalue": gas,
+		            "gasvalue": gas,
                     "humidityvalue": humidity,
                     "airqualityvalue": airquality
                 }
