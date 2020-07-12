@@ -21,8 +21,8 @@ try:
     except IOError:
 	    sense = bme680.BME680(bme680.I2C_ADDR_SECONDARY)
 
-    sense.set_humidity_oversample(bme680.OS_2X)
-    sense.set_pressure_oversample(bme680.OS_4X)
+    sense.set_humidity_oversample(bme680.OS_8X)
+    sense.set_pressure_oversample(bme680.OS_8X)
     sense.set_temperature_oversample(bme680.OS_8X)
     sense.set_filter(bme680.FILTER_SIZE_3)
     sense.set_gas_status(bme680.ENABLE_GAS_MEAS)
