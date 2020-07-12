@@ -67,7 +67,7 @@ try:
                 gas = 100 - (humidity_weighting * 100)
 
             humidity = sense.data.humidity
-	        aq_humidity = sense.data.humidity
+	    aq_humidity = sense.data.humidity
             humidity_offset = aq_humidity - humidity_baseline
 
             if humidity_offset > 0:
@@ -88,12 +88,12 @@ try:
                 "fields": {
                     "temperaturevalue": temperature,
                     "pressurevalue": pressure,
-		            "gasvalue": gas,
+		    "gasvalue": gas,
                     "humidityvalue": humidity,
                     "airqualityvalue": airquality
                 }
             }]
 
-        client.write_points(datapoints)
+	client.write_points(datapoints)
 except KeyboardInterrupt:
 	print("Exit")
