@@ -54,7 +54,7 @@ try:
         timestamp = datetime.datetime.utcnow().isoformat()
 
 	if sense.get_sensor_data() and sense.data.heat_stable:
-            temperature = sense.data.temperature
+            temperature = get_temperature(sense)
             pressure = sense.data.pressure
 
             gas = sense.data.gas_resistance
@@ -67,18 +67,19 @@ try:
                 gas = 100 - (humidity_weighting * 100)
 
             humidity = sense.data.humidity
-            humidity_offset = humidity - humidity_baseline
+	    aq_humidity = sense.data.humidity
+            humidity_offset = aq_humidity - humidity_baseline
 
             if humidity_offset > 0:
-                humidity = (100 - humidity_baseline - humidity_offset)
-                humidity /= (100 - humidity_baseline)
-                humidity *= (humidity_weighting * 100)
+                aq_humidity = (100 - humidity_baseline - humidity_offset)
+                aq_humidity /= (100 - humidity_baseline)
+                aq_humidity *= (humidity_weighting * 100)
             else:
-                humidity = (humidity_baseline + humidity_offset)
-                humidity /= humidity_baseline
-                humidity *= (humidity_weighting * 100)
+                aq_humidity = (humidity_baseline + humidity_offset)
+                aq_humidity /= humidity_baseline
+                aq_humidity *= (humidity_weighting * 100)
 
-            airquality = gas + humidity
+            airquality = gas + aq_humidity
 
             datapoints = [{
                 "measurement": "office",
