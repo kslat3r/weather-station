@@ -37,14 +37,14 @@ try:
     burn_in_time = 300
     burn_in_data = []
 
-    while current_time - start_time < burn_in_time:
-        current_time = time.time()
+    # while current_time - start_time < burn_in_time:
+    #     current_time = time.time()
 
-        if sense.get_sensor_data() and sense.data.heat_stable:
-            gas = sense.data.gas_resistance
+    #     if sense.get_sensor_data() and sense.data.heat_stable:
+    #         gas = sense.data.gas_resistance
 
-            burn_in_data.append(gas)
-            time.sleep(1)
+    #         burn_in_data.append(gas)
+    #         time.sleep(1)
 
     gas_baseline = sum(burn_in_data[-50:]) / 50.0
     humidity_baseline = 40.0
@@ -53,7 +53,7 @@ try:
     while True:
         timestamp = datetime.datetime.utcnow().isoformat()
 
-	if sense.get_sensor_data() and sense.data.heat_stable:
+        if sense.get_sensor_data() and sense.data.heat_stable:
             temperature = get_temperature(sense)
             pressure = sense.data.pressure
 
@@ -67,7 +67,7 @@ try:
                 gas = 100 - (humidity_weighting * 100)
 
             humidity = sense.data.humidity
-	    aq_humidity = sense.data.humidity
+            aq_humidity = sense.data.humidity
             humidity_offset = aq_humidity - humidity_baseline
 
             if humidity_offset > 0:
@@ -88,12 +88,12 @@ try:
                 "fields": {
                     "temperaturevalue": temperature,
                     "pressurevalue": pressure,
-		    "gasvalue": gas,
+		    		"gasvalue": gas,
                     "humidityvalue": humidity,
                     "airqualityvalue": airquality
                 }
             }]
 
-	client.write_points(datapoints)
+            client.write_points(datapoints)
 except KeyboardInterrupt:
 	print("Exit")
